@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # 1. BAZA (PostgreSQL)
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: skola_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d skola_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. KEŠ (Redis)
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  # 3. BACKEND (Vaš Python/Flask kod)
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    environment:
+      # Ovako Flask zna gde su baza i redis unutar Dockera
+      DATABASE_URL: postgresql://admin:password123@db:5432/skola_db
+      REDIS_URL: redis://redis:6379/0
+      FLASK_APP: app.py
+      FLASK_DEBUG: 1
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./server:/app
+
+  # 4. FRONTEND (Vaš React kod)
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - server
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:

@@ -1,0 +1,17 @@
+# --- PYTHON & BACKEND ---
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# --- NODE & FRONTEND (Ovo je ono ogromno od 500MB) ---
+client/node_modules/
+client/build/
+client/.pnp
+.DS_Store
+
+# --- DOCKER & BAZA (Ne šaljemo tešku bazu na net) ---
+db_data/
+pgdata/
+.idea/
+.vscode/
