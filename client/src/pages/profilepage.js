@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // <--- ZA DUGME NAZAD
+import { useNavigate } from 'react-router-dom'; 
 import { useAuth } from '../context/authcontext';
 import api from '../api_services/api';
 
 function ProfilePage() {
     const { user } = useAuth();
-    const navigate = useNavigate(); // Hook za navigaciju
+    const navigate = useNavigate(); 
     
     const [formData, setFormData] = useState({
         first_name: '', 
@@ -28,7 +28,6 @@ function ProfilePage() {
                 broj: user.broj || '',
                 drzava: user.drzava || '',
                 pol: user.pol || 'Ostalo',
-                // Ako datum postoji, uzimamo prvih 10 karaktera (YYYY-MM-DD) da bi input radio
                 datum_rodjenja: user.datum_rodjenja ? user.datum_rodjenja.substring(0, 10) : ''
             });
             setPreview(user.profile_image);
@@ -45,7 +44,6 @@ function ProfilePage() {
         e.preventDefault();
         const data = new FormData();
         
-        // Dodajemo sve podatke u FormData
         Object.keys(formData).forEach(key => {
             data.append(key, formData[key]);
         });
@@ -57,7 +55,6 @@ function ProfilePage() {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             alert("Uspešno sačuvano!");
-            // Ne reloadujemo celu stranu, nego možemo nazad na dashboard ili osvežimo podatke
             window.location.reload(); 
         } catch (err) {
             console.error(err);

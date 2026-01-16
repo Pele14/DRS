@@ -7,8 +7,6 @@ function LoginPage() {
   const [error, setError] = useState('');
   
   const { login } = useAuth();
-  // navigate nam vise ne treba ovde, koristimo "tvrdo" prebacivanje
-  
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -16,8 +14,6 @@ function LoginPage() {
     try {
       await login(email, password);
       
-      // OVO JE PROMENA: Umesto navigate, radimo full reload
-      // Ovo garantuje da ce browser povuci svezu sesiju
       window.location.href = '/'; 
       
     } catch (err) {

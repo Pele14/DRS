@@ -5,7 +5,7 @@ function UserList() {
     const [users, setUsers] = useState([]);
     const [error, setError] = useState(null);
 
-    // Učitaj korisnike čim se komponenta prikaže
+
     useEffect(() => {
         loadUsers();
     }, []);
@@ -24,7 +24,6 @@ function UserList() {
 
         try {
             await user_api.deleteUser(id);
-            // Osveži listu nakon brisanja (filtriramo lokalno da ne zovemo server opet)
             setUsers(users.filter(user => user.id !== id));
         } catch (err) {
             alert("Greška pri brisanju: " + (err.response?.data?.error || "Greška"));

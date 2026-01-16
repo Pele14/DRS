@@ -2,11 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/authcontext';
 import AddUserForm from '../components/admin';
 import UserList from '../components/users';
-
-
-import AdminCourseRequests from '../components/adminCourseRequests'; // <--- NOVO
-
-// Importi za PROFESORA/STUDENTA
+import AdminCourseRequests from '../components/adminCourseRequests'; 
 import CourseManager from '../components/courseMenager'; 
 
 function DashboardPage() {
@@ -64,7 +60,7 @@ function DashboardPage() {
       {user?.role === 'admin' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
               
-              {/* 1. Zahtevi za Kurseve (NOVO) */}
+              {/* 1. Zahtevi za Kurseve */}
               <section>
                   <h2 style={{ borderLeft: '5px solid #ffc107', paddingLeft: '10px', color: '#333' }}>
                       Zahtevi za odobrenje kurseva

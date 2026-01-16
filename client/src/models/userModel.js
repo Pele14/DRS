@@ -1,7 +1,7 @@
 export const initialUserState = {
     email: '',
     password: '',
-    role: 'student', // Default vrednost
+    role: 'student', 
     firstName: '',
     lastName: '',
     datumRodjenja: '',

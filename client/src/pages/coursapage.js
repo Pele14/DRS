@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { course_api } from '../api_services/courseservices';
 import { useAuth } from '../context/authcontext';
@@ -7,27 +7,23 @@ function CourseDetailsPage() {
     const { id } = useParams();
     const { user } = useAuth();
     const navigate = useNavigate();
-    
     const [course, setCourse] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    
-    // State za formu izmene
     const [editData, setEditData] = useState({ title: '', description: '' });
-    // State za dodavanje studenta
     const [studentEmail, setStudentEmail] = useState('');
 
-    const loadCourse = () => {
+    const loadCourse = useCallback(() => {
         course_api.getById(id)
             .then(res => {
                 setCourse(res.data);
                 setEditData({ title: res.data.title, description: res.data.description });
             })
             .catch(() => navigate('/'));
-    };
+    }, [id, navigate]);
 
     useEffect(() => {
         loadCourse();
-    }, [id]);
+    }, [loadCourse]);
 
     // 1. ČUVANJE IZMENA
     const handleUpdate = async () => {

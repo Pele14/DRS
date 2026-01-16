@@ -1,7 +1,7 @@
 export const initialCourseState = {
     title: '',
     description: '',
-    status: 'pending', // Podrazumevani status
+    status: 'pending', 
     professor_id: null,
-    materials: [] // Kasnije za PDF fajlove
+    materials: [] 
 };

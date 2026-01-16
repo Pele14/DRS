@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCourses } from '../hooks/useCourses';
 import { useAuth } from '../context/authcontext';
-import { course_api } from '../api_services/courseservices'; // Dodali smo direktan import
+import { course_api } from '../api_services/courseservices'; 
 import { initialCourseState } from '../models/courseModel';
 
 function CourseManager() {
@@ -10,15 +10,14 @@ function CourseManager() {
     const { user } = useAuth();
     const [newCourse, setNewCourse] = useState(initialCourseState);
     
-    // NOVO: State za kurseve koje student pohađa
+
     const [enrolledCourses, setEnrolledCourses] = useState([]);
 
     useEffect(() => {
-        // Ako je PROFESOR -> Učitaj kurseve koje on predaje
         if (user?.role === 'profesor') {
             loadMyCourses();
         }
-        // Ako je STUDENT -> Učitaj kurseve koje on POHAĐA
+ 
         if (user?.role === 'student') {
             loadStudentCourses();
         }
@@ -78,7 +77,7 @@ function CourseManager() {
         );
     }
 
-    // --- PRIKAZ ZA PROFESORA / ADMINA (Oni i dalje vide katalog i kreiranje) ---
+
     return (
         <div style={{ marginTop: '20px' }}>
             
@@ -110,7 +109,7 @@ function CourseManager() {
                 </div>
             )}
 
-            {/* JAVNI KATALOG (Samo za Profesora i Admina, student ovo više ne vidi) */}
+            {/* JAVNI KATALOG (Samo za Profesora i Admina) */}
             <h2 style={{ borderBottom: '2px solid #eee', paddingBottom: '10px' }}>Katalog Svih Kurseva</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                 {courses.filter(course => course.status === 'approved').map(course => (

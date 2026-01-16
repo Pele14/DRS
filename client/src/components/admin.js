@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import { auth_api } from '../api_services/authservices';
-// Ako nemas validatore, zakomentarisi ovu liniju privremeno da ne puca
-
 import { initialUserState } from '../models/userModel';
 
 function AddUserForm() {
-  // Ako nemas initialUserState, koristi ovo zakomentarisano:
-  // const initialUserState = { email: '', password: '', role: 'student', firstName: '', lastName: '', datumRodjenja: '', pol: 'Ostalo', drzava: '', ulica: '', broj: '' };
-  
+
   const [formData, setFormData] = useState(initialUserState);
   
   const handleChange = (e) => {
@@ -17,20 +13,15 @@ function AddUserForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Privremeno isključujemo validaciju da vidimo da li server radi
-    // const error = validateRegistration(formData);
-    // if (error) return alert(error);
-
-    console.log("ŠALJEM PODATKE:", formData); // Pogledaj u Console (F12) šta se šalje
+  
+    console.log("ŠALJEM PODATKE:", formData); 
 
     try {
-      // Provera da li funkcija uopšte postoji
       if (!auth_api.registerUser && !auth_api.register) {
           alert("GREŠKA: U authservices.js ne postoji funkcija 'registerUser' ni 'register'!");
           return;
       }
 
-      // Pozivamo funkciju (probamo oba naziva za svaki slucaj)
       if (auth_api.registerUser) {
           await auth_api.registerUser(formData);
       } else {
@@ -44,14 +35,11 @@ function AddUserForm() {
       console.error("DETALJI GREŠKE:", err);
 
       if (err.response) {
-          // Server je odgovorio sa greškom (4xx ili 5xx)
           alert(`❌ GREŠKA SERVERA (${err.response.status}):\n` + 
                 JSON.stringify(err.response.data));
       } else if (err.request) {
-          // Server se ne javlja
           alert("❌ SERVER NEDOSTUPAN (Network Error). Proveri da li Docker radi.");
       } else {
-          // Greška u React kodu
           alert("❌ GREŠKA U KODU: " + err.message);
       }
     }

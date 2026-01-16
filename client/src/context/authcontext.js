@@ -9,9 +9,8 @@ export const AuthProvider = ({ children }) => {
 
     const checkUser = async () => {
         try {
-            // Sada ovo gadja 'me()' funkciju koju smo popravili u servisu
             const res = await auth_api.me();
-            console.log("CheckUser User:", res.data); // Debug
+            console.log("CheckUser User:", res.data); 
             setUser(res.data);
         } catch (err) {
             console.log("CheckUser: Nije ulogovan");
@@ -26,11 +25,8 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        // Pravimo objekat ovde
         const data = { email, password };
-        // Šaljemo objekat u servis (koji sada očekuje objekat)
         await auth_api.login(data);
-        // Osvežavamo korisnika
         await checkUser(); 
     };
 
