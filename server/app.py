@@ -37,9 +37,9 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = redis.from_url('redis://redis:6379')
 
-# --- 3. INICIJALIZACIJA ---
-# Precizniji CORS za React (bitno zbog cookies/sesija)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+# -# Dozvoljavamo pristup sa BILO KOJE IP adrese (zvezdica *)
+# supports_credentials=True je važno za login (sesije)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 db.init_app(app)
 Session(app)
