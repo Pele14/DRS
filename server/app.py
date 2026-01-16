@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory # <--- DODATO send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_session import Session
 import redis
@@ -17,19 +17,18 @@ from src.Database.repositories.users import User, UserRole
 app = Flask(__name__)
 
 # --- 1. KONFIGURACIJA UPLOADA ---
-# Ovo pravi apsolutnu putanju do foldera 'uploads' unutar kontejnera (/app/uploads)
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# --- 2. KONFIGURACIJA BAZE I SESIJA ---
+#2. KONFIGURACIJA BAZE I SESIJA ---
 db_url = os.environ.get('DATABASE_URL', 'postgresql://admin:password123@db:5432/skola_db')
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Session-based auth sa Redisom
+#3. Session-based auth sa Redisom
 app.config['SECRET_KEY'] = 'super_tajni_kljuc_123'
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = True
@@ -37,21 +36,18 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = redis.from_url('redis://redis:6379')
 
-# -# Dozvoljavamo pristup sa BILO KOJE IP adrese (zvezdica *)
-# supports_credentials=True je važno za login (sesije)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 db.init_app(app)
 Session(app)
 
-# --- 4. REGISTRACIJA RUTA ---
+#4. REGISTRACIJA RUTA 
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(user_bp, url_prefix='/api/users')
 app.register_blueprint(course_bp, url_prefix='/api/courses')
 
-# --- 5. RUTA ZA PRIKAZ SLIKE (OVO JE FALILO!) ---
-# Kada React traži: http://localhost:5000/uploads/slika.png
-# Flask gleda u folder i vraća fajl.
+#5. RUTA ZA PRIKAZ SLIKE
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
@@ -61,7 +57,6 @@ with app.app_context():
     try:
         db.create_all()
         
-        # Provera da li admin postoji
         from werkzeug.security import generate_password_hash
         if not User.query.filter_by(email="admin@skola.rs").first():
             admin_user = User(

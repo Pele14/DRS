@@ -13,36 +13,24 @@ def register():
 
         email = data.get('email')
         password = data.get('password')
-        
-        # Provera da li korisnik već postoji
         if UserRepository.get_by_email(email):
             return jsonify({"error": "Email već postoji"}), 400
-
-        # --- OVDE JE BIO PROBLEM ---
-        # Frontend šalje "firstName" (camelCase), a baza traži "first_name" (snake_case).
-        # Moramo ih mapirati ručno.
-        
         first_name = data.get('firstName') or data.get('first_name')
         last_name = data.get('lastName') or data.get('last_name')
-        
-        # Ostali podaci
         ulica = data.get('ulica')
         broj = data.get('broj')
         drzava = data.get('drzava')
         pol = data.get('pol')
-        
-        # Datum rođenja (Frontend šalje string 'YYYY-MM-DD')
         datum_rodjenja = data.get('datumRodjenja')
         if datum_rodjenja == '': 
             datum_rodjenja = None
 
-        # Određivanje uloge (Ako admin bira ulogu, uzmi je, inače default STUDENT)
         role_str = data.get('role', 'student')
         if role_str == 'admin': role_enum = UserRole.ADMIN
         elif role_str == 'profesor': role_enum = UserRole.PROFESSOR
         else: role_enum = UserRole.STUDENT
 
-        # Pravimo novog korisnika sa SVIM podacima
+
         new_user = User(
             email=email,
             password_hash=generate_password_hash(password),
@@ -54,7 +42,7 @@ def register():
             drzava=drzava,
             pol=pol,
             datum_rodjenja=datum_rodjenja,
-            profile_image=None # Slika je prazna kod registracije, to je OK
+            profile_image=None
         )
         
         db.session.add(new_user)
@@ -72,7 +60,6 @@ def login():
     email = data.get('email')
     password = data.get('password')
     
-    # Sigurnosna provera za čudne podatke
     if isinstance(email, dict):
         password = email.get('password')
         email = email.get('email')

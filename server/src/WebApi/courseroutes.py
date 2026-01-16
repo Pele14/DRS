@@ -8,17 +8,13 @@ from flask import Blueprint, request, jsonify, session, send_from_directory
 from src.Services.courseService import CourseService
 from src.Database.repositories.courses import CourseRepository
 
-# --- !!! OVO MORA BITI OVDE, ODMAH POSLE IMPORTA !!! ---
+
 course_bp = Blueprint('course_bp', __name__)
 
-# ==============================================================================
-# PODEŠAVANJA ZA EMAIL
-# ==============================================================================
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 SENDER_EMAIL = "aleksa.pele003@gmail.com"  
 SENDER_PASSWORD = "xykzqcbmpuztpnkv"       
-# ==============================================================================
 
 def send_email_notification(target_email, course_title, status):
     """
@@ -50,10 +46,6 @@ def send_email_notification(target_email, course_title, status):
 
     except Exception as e:
         print(f"❌ [PROCES GREŠKA] Nisam uspeo da pošaljem email: {e}", flush=True)
-
-# ---------------------------------------------------------------------------
-# RUTE API-ja
-# ---------------------------------------------------------------------------
 
 @course_bp.route('/', methods=['GET'], strict_slashes=False)
 def get_courses():
@@ -113,7 +105,6 @@ def update_status(course_id):
     
     return jsonify(result), 400
 
-# --- NOVE RUTE (ZA UPLOAD I STUDENTE) ---
 
 @course_bp.route('/<int:course_id>/details', methods=['PUT'])
 def update_details(course_id):

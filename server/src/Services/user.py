@@ -4,7 +4,6 @@ class UserService:
     @staticmethod
     def get_all_users():
         users = UserRepository.get_all()
-        # Pretvaramo objekte u rečnike (JSON format)
         return [user.to_dict() for user in users]
 
     @staticmethod

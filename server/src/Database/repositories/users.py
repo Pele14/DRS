@@ -11,12 +11,9 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    # OVI MORAJU BITI POPUNJENI (To je OK)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     role = db.Column(db.Enum(UserRole), nullable=False)
-    
-    # --- PROMENA: OVO SVE MORA BITI 'True' DA NE PUCA ---
     first_name = db.Column(db.String(50), nullable=True)
     last_name = db.Column(db.String(50), nullable=True)
     datum_rodjenja = db.Column(db.Date, nullable=True)
@@ -24,7 +21,6 @@ class User(db.Model):
     drzava = db.Column(db.String(50), nullable=True)
     ulica = db.Column(db.String(100), nullable=True)
     broj = db.Column(db.String(10), nullable=True)
-    # ----------------------------------------------------
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     profile_image = db.Column(db.String(255), nullable=True)

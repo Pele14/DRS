@@ -3,7 +3,6 @@ from werkzeug.utils import secure_filename
 from src.Database.repositories.courses import CourseRepository, Course
 from src.Database.repositories.users import UserRepository
 
-# Putanja gde čuvamo fajlove (unutar server foldera)
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -43,7 +42,6 @@ class CourseService:
         CourseRepository.save_changes()
         return {"success": True}
 
-    # --- NOVO: IZMENA PODATAKA ---
     @staticmethod
     def update_course_details(course_id, data):
         course = CourseRepository.get_by_id(course_id)
@@ -54,7 +52,7 @@ class CourseService:
         CourseRepository.save_changes()
         return {"success": True, "course": course.to_dict()}
 
-    # --- NOVO: UPLOAD PDF-a ---
+
     @staticmethod
     def upload_material(course_id, file):
         course = CourseRepository.get_by_id(course_id)
@@ -70,10 +68,10 @@ class CourseService:
             return {"success": True, "file": filename}
         return {"success": False, "error": "Nema fajla"}
 
-    # --- NOVO: DODAVANJE STUDENTA PO EMAILU ---
+
     @staticmethod
     def add_student_to_course(course_id, student_email):
-        from src.Database.repositories.users import User # Import ovde da izbegnemo kruzni
+        from src.Database.repositories.users import User
         
         course = CourseRepository.get_by_id(course_id)
         if not course: return {"success": False, "error": "Kurs nije pronađen"}
@@ -91,9 +89,6 @@ class CourseService:
         course.students.append(student)
         CourseRepository.save_changes()
         return {"success": True, "student": f"{student.first_name} {student.last_name}"}
-
-
-        # --- NOVO: Vraća kurseve na koje je student upisan ---
     @staticmethod
     def get_courses_for_student(student_id):
         from src.Database.repositories.users import UserRepository
@@ -101,7 +96,4 @@ class CourseService:
         
         if not user:
             return []
-            
-        # Koristimo relaciju 'enrolled_courses' koju smo definisali u modelu
-        # Moramo pretvoriti u listu jer je lazy='dynamic'
         return [c.to_dict() for c in user.enrolled_courses]

@@ -1,6 +1,5 @@
 from src.Database.connection.connection import db
 
-# 1. TABELA POVEZIVANJA (Student <-> Kurs)
 enrollments = db.Table('enrollments',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
     db.Column('course_id', db.Integer, db.ForeignKey('courses.id'), primary_key=True)
@@ -13,15 +12,9 @@ class Course(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     professor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    
     status = db.Column(db.String(20), default='pending') 
-    
-    # 2. NOVO: Putanja do PDF fajla
     material_link = db.Column(db.String(255), nullable=True)
-
     professor = db.relationship('User', backref=db.backref('courses', lazy=True))
-    
-    # 3. NOVO: Lista studenata na kursu
     students = db.relationship('User', secondary=enrollments, backref=db.backref('enrolled_courses', lazy='dynamic'))
 
     def to_dict(self):
@@ -32,8 +25,7 @@ class Course(db.Model):
             "status": self.status,
             "professor": f"{self.professor.first_name} {self.professor.last_name}",
             "professor_id": self.professor_id,
-            "material_link": self.material_link, # Vraćamo link fajla
-            # Vraćamo listu studenata (samo imena i emailovi)
+            "material_link": self.material_link,
             "students": [{"id": s.id, "name": f"{s.first_name} {s.last_name}", "email": s.email} for s in self.students]
         }
 
