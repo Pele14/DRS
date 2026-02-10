@@ -9,10 +9,12 @@ from datetime import timedelta, date
 from src.WebApi.userroutes import user_bp
 from src.WebApi.courseroutes import course_bp
 from src.WebApi.authroutes import auth_bp
+from src.WebApi.taskroutes import task_bp
 
 # --- IMPORTI BAZE ---
 from src.Database.connection.connection import db
 from src.Database.repositories.users import User, UserRole
+from src.Database.repositories.tasks import Task, Submission
 
 app = Flask(__name__)
 
@@ -45,6 +47,7 @@ Session(app)
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(user_bp, url_prefix='/api/users')
 app.register_blueprint(course_bp, url_prefix='/api/courses')
+app.register_blueprint(task_bp, url_prefix='/api/tasks')
 
 #5. RUTA ZA PRIKAZ SLIKE
 

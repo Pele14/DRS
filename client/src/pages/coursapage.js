@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { course_api } from '../api_services/courseservices';
 import { useAuth } from '../context/authcontext';
+import TaskSection from '../components/TaskSection'
 
 function CourseDetailsPage() {
     const { id } = useParams();
@@ -108,7 +109,7 @@ function CourseDetailsPage() {
                         <input type="file" accept="application/pdf" onChange={handleUpload} />
                     </div>
                 )}
-
+                <TaskSection courseId={id} />
                 <hr />
 
                 {/* --- STUDENTI --- */}
