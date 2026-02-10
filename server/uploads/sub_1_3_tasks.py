@@ -3,13 +3,14 @@ from src.Database.connection.connection import db
 
 class Task(db.Model):
     __tablename__ = 'tasks'
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     deadline = db.Column(db.DateTime, nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
-    professor_id = db.Column(db.Integer, nullable=True)
     
+    # Veza: omogućava da kroz task.course pristupimo podacima o kursu
     course = db.relationship('Course', backref=db.backref('tasks', lazy=True, cascade="all, delete-orphan"))
 
     def to_dict(self):
@@ -23,14 +24,16 @@ class Task(db.Model):
 
 class Submission(db.Model):
     __tablename__ = 'submissions'
+
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=False)
-    file_path = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(255), nullable=False) # Lokacija .py fajla
     grade = db.Column(db.Integer, nullable=True)
     comment = db.Column(db.Text, nullable=True)
     submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Veze ka studentu i zadatku
     student = db.relationship('User', backref=db.backref('submissions', lazy=True))
     task = db.relationship('Task', backref=db.backref('submissions', lazy=True))
 
@@ -38,7 +41,7 @@ class Submission(db.Model):
         return {
             "id": self.id,
             "student_id": self.student_id,
-            "student_name": f"{self.student.first_name} {self.student.last_name}" if self.student else "Nepoznat",
+            "student_name": f"{self.student.first_name} {self.student.last_name}",
             "task_id": self.task_id,
             "file_path": self.file_path,
             "grade": self.grade,
@@ -54,20 +57,8 @@ class TaskRepository:
         return task
 
     @staticmethod
-    def get_by_course(course_id, user_id=None, role=None):
-        tasks = Task.query.filter_by(course_id=course_id).all()
-        # Ako je student, lepimo informaciju o predaji
-        if role == 'student' and user_id:
-            results = []
-            for t in tasks:
-                d = t.to_dict()
-                sub = Submission.query.filter_by(task_id=t.id, student_id=user_id).first()
-                d['grade'] = sub.grade if sub else None
-                d['comment'] = sub.comment if sub else None
-                d['submitted_file'] = sub.file_path if sub else None
-                results.append(d)
-            return results
-        return tasks
+    def get_by_course(course_id):
+        return Task.query.filter_by(course_id=course_id).all()
 
     @staticmethod
     def get_by_id(task_id):
@@ -76,15 +67,6 @@ class TaskRepository:
 class SubmissionRepository:
     @staticmethod
     def create(submission):
-        # Update ako već postoji (da ne pravimo duplikate)
-        existing = Submission.query.filter_by(task_id=submission.task_id, student_id=submission.student_id).first()
-        if existing:
-            # Ako je već ocenjeno, ne damo update (opciono)
-            if existing.grade: return existing
-            existing.file_path = submission.file_path
-            existing.submitted_at = datetime.utcnow()
-            db.session.commit()
-            return existing
         db.session.add(submission)
         db.session.commit()
         return submission

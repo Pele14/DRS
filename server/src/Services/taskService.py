@@ -1,5 +1,5 @@
-import os
-import smtplib
+import os, smtplib
+from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from multiprocessing import Process
@@ -7,92 +7,69 @@ from werkzeug.utils import secure_filename
 from src.Database.repositories.tasks import TaskRepository, Task, SubmissionRepository, Submission
 from src.Database.repositories.courses import CourseRepository
 
-# Konfiguracija za mejlove (istu koristi i tvoj drugar u courseroutes)
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-SENDER_EMAIL = "aleksa.pele003@gmail.com"  
-SENDER_PASSWORD = "xykzqcbmpuztpnkv"
+# KREDA (Promeni SENDER_PASSWORD na App Password!)
+SMTP_SERVER, SMTP_PORT = "smtp.gmail.com", 587
+SENDER_EMAIL = ""
+SENDER_PASSWORD = "" # PROMENI OVO!
 
 def send_bulk_emails(student_emails, course_title, task_title, deadline):
-    """
-    Funkcija koja se pokreće u zasebnom PROCESU.
-    Prolazi kroz listu studenata i šalje obaveštenja.
-    """
     try:
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
         server.starttls()
         server.login(SENDER_EMAIL, SENDER_PASSWORD)
-
         for email in student_emails:
             msg = MIMEMultipart()
-            msg['From'] = SENDER_EMAIL
-            msg['To'] = email
-            msg['Subject'] = f"Novi zadatak na kursu: {course_title}"
-
-            body = f"Zdravo,\n\nObjavljen je novi zadatak '{task_title}'.\nRok za predaju: {deadline}\n\nSrećan rad!"
-            msg.attach(MIMEText(body, 'plain'))
+            msg['From'], msg['To'], msg['Subject'] = SENDER_EMAIL, email, f"Novi zadatak: {course_title}"
+            msg.attach(MIMEText(f"Zdravo,\n\nObjavljen je '{task_title}'.\nRok: {deadline}", 'plain'))
             server.sendmail(SENDER_EMAIL, email, msg.as_string())
-        
         server.quit()
-        print(f"✅ [PROCES] Mejlovi uspešno poslati za {len(student_emails)} studenata.")
-    except Exception as e:
-        print(f"❌ [PROCES GREŠKA] Slanje mejlova nije uspelo: {e}")
+    except Exception as e: print(f"Email error: {e}")
 
 class TaskService:
-
     @staticmethod
     def create_task(data, professor_id):
-        # 1. Provera da li kurs postoji i da li je profesor vlasnik
         course = CourseRepository.get_by_id(data.get('course_id'))
         if not course or course.professor_id != professor_id:
-            return {"success": False, "error": "Nemate dozvolu za kreiranje zadatka na ovom kursu."}
-
-        # 2. Kreiranje zadatka u bazi
+            return {"success": False, "error": "Zabranjeno"}
+        
+        # Sređivanje datuma (ako stigne kao string sa 'T' iz frontenda)
+        dl_str = data.get('deadline').replace('T', ' ')
         new_task = Task(
             title=data.get('title'),
             description=data.get('description'),
-            deadline=data.get('deadline'), # Očekuje se string 'YYYY-MM-DD HH:MM:SS'
-            course_id=course.id
+            deadline=datetime.strptime(dl_str, '%Y-%m-%d %H:%M') if len(dl_str) < 17 else datetime.strptime(dl_str, '%Y-%m-%d %H:%M:%S'),
+            course_id=course.id,
+            professor_id=professor_id
         )
         TaskRepository.create(new_task)
-
-        # 3. POKRETANJE ZASEBNOG PROCESA ZA MEJLOVE (10 poena)
-        student_emails = [s.email for s in course.students]
-        if student_emails:
-            p = Process(target=send_bulk_emails, args=(
-                student_emails, course.title, new_task.title, data.get('deadline')
-            ))
-            p.start()
-
+        
+        emails = [s.email for s in course.students]
+        if emails:
+            Process(target=send_bulk_emails, args=(emails, course.title, new_task.title, dl_str)).start()
         return {"success": True, "task": new_task.to_dict()}
 
     @staticmethod
     def submit_solution(task_id, student_id, file):
-        # 1. Validacija ekstenzije (samo .py)
-        if not file.filename.endswith('.py'):
-            return {"success": False, "error": "Dozvoljeni su samo .py fajlovi."}
+        if not file.filename.endswith('.py'): return {"success": False}
+        
+        # Provera da li je već ocenjeno
+        existing = Submission.query.filter_by(task_id=task_id, student_id=student_id).first()
+        if existing and existing.grade:
+            return {"success": False, "error": "Zadatak je već ocenjen, ne možete menjati rad."}
 
-        # 2. Čuvanje fajla
+        upload_folder = '/app/uploads'
+        if not os.path.exists(upload_folder): os.makedirs(upload_folder)
+        
         filename = secure_filename(f"sub_{task_id}_{student_id}_{file.filename}")
-        upload_path = os.path.join('uploads', filename)
-        file.save(upload_path)
-
-        # 3. Upis u bazu
-        new_submission = Submission(
-            student_id=student_id,
-            task_id=task_id,
-            file_path=filename
-        )
-        SubmissionRepository.create(new_submission)
-        return {"success": True, "submission": new_submission.to_dict()}
+        file.save(os.path.join(upload_folder, filename))
+        
+        SubmissionRepository.create(Submission(student_id=student_id, task_id=task_id, file_path=filename))
+        return {"success": True}
 
     @staticmethod
     def grade_submission(submission_id, data):
-        submission = SubmissionRepository.get_by_id(submission_id)
-        if not submission:
-            return {"success": False, "error": "Predaja nije pronađena."}
-
-        submission.grade = data.get('grade')
-        submission.comment = data.get('comment')
+        sub = SubmissionRepository.get_by_id(submission_id)
+        if not sub: return {"success": False}
+        sub.grade, sub.comment = data.get('grade'), data.get('comment')
         SubmissionRepository.save_changes()
         return {"success": True}
