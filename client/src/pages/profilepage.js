@@ -63,79 +63,120 @@ function ProfilePage() {
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '600px', margin: '20px auto', border: '1px solid #ddd', borderRadius: '10px', boxShadow: '0 0 10px rgba(0,0,0,0.1)' }}>
+        <div style={{ 
+          minHeight: '100vh',
+          padding: '40px 20px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+            <div className="form-container" style={{ 
+              maxWidth: '700px',
+              width: '100%',
+              animation: 'fadeIn 0.6s ease'
+            }}>
             
             {/* HEDER SA DUGMETOM NAZAD */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h2>Uredi Profil</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                <h2 style={{ 
+                  margin: 0,
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}>Uredi Profil</h2>
                 <button 
-                    onClick={() => navigate('/')} 
-                    style={{ padding: '8px 15px', cursor: 'pointer', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '5px' }}
+                    onClick={() => navigate('/')}
+                    className="btn-secondary"
                 >
-                    ← Nazad na Dashboard
+                    ← Nazad
                 </button>
             </div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 
                 {/* Slika */}
                 <div style={{ textAlign: 'center', marginBottom: '10px' }}>
-                    <div style={{ width: '150px', height: '150px', margin: '0 auto', borderRadius: '50%', overflow: 'hidden', border: '3px solid #007bff' }}>
+                    <div style={{ 
+                      width: '150px', 
+                      height: '150px', 
+                      margin: '0 auto', 
+                      borderRadius: '50%', 
+                      overflow: 'hidden', 
+                      border: '4px solid transparent',
+                      background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #667eea 0%, #764ba2 100%) border-box',
+                      boxShadow: '0 10px 25px rgba(102, 126, 234, 0.3)'
+                    }}>
                         <img 
                             src={preview || 'https://via.placeholder.com/150'} 
                             alt="Profile" 
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
                     </div>
-                    <label style={{ display: 'block', marginTop: '10px', cursor: 'pointer', color: '#007bff', fontWeight: 'bold' }}>
-                        Promeni sliku
+                    <label style={{ 
+                      display: 'inline-block', 
+                      marginTop: '16px', 
+                      cursor: 'pointer', 
+                      padding: '10px 20px',
+                      background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+                      borderRadius: '8px',
+                      color: '#4F46E5',
+                      fontWeight: '600',
+                      transition: 'all 0.3s ease'
+                    }}>
+                        📷 Promeni sliku
                         <input type="file" onChange={handleFile} style={{ display: 'none' }} />
                     </label>
                 </div>
 
                 {/* Read-only polja (Informacije) */}
-                <div style={{ backgroundColor: '#f8f9fa', padding: '10px', borderRadius: '5px' }}>
-                    <small style={{ color: '#666' }}>Email: {user?.email}</small><br/>
-                    <small style={{ color: '#666' }}>Uloga: <strong>{user?.role}</strong></small>
+                <div style={{ 
+                  background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+                  padding: '16px', 
+                  borderRadius: '12px',
+                  border: '1px solid rgba(102, 126, 234, 0.2)'
+                }}>
+                    <p style={{ margin: '0 0 8px 0', color: '#6B7280', fontSize: '0.9em' }}>
+                      <strong>Email:</strong> {user?.email}
+                    </p>
+                    <p style={{ margin: 0, color: '#6B7280', fontSize: '0.9em' }}>
+                      <strong>Uloga:</strong> <span className="badge-primary" style={{ marginLeft: '8px' }}>{user?.role}</span>
+                    </p>
                 </div>
 
                 {/* Lični podaci */}
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <div style={{ flex: 1 }}>
-                        <label>Ime:</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Ime</label>
                         <input 
                             value={formData.first_name} 
-                            onChange={e => setFormData({...formData, first_name: e.target.value})} 
-                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                            onChange={e => setFormData({...formData, first_name: e.target.value})}
                         />
                     </div>
-                    <div style={{ flex: 1 }}>
-                        <label>Prezime:</label>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Prezime</label>
                         <input 
                             value={formData.last_name} 
-                            onChange={e => setFormData({...formData, last_name: e.target.value})} 
-                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                            onChange={e => setFormData({...formData, last_name: e.target.value})}
                         />
                     </div>
                 </div>
 
                 {/* Datum i Pol */}
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <div style={{ flex: 1 }}>
-                        <label>Datum rođenja:</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Datum rođenja</label>
                         <input 
                             type="date"
                             value={formData.datum_rodjenja} 
-                            onChange={e => setFormData({...formData, datum_rodjenja: e.target.value})} 
-                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                            onChange={e => setFormData({...formData, datum_rodjenja: e.target.value})}
                         />
                     </div>
-                    <div style={{ flex: 1 }}>
-                        <label>Pol:</label>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Pol</label>
                         <select 
                             value={formData.pol} 
                             onChange={e => setFormData({...formData, pol: e.target.value})}
-                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
                         >
                             <option value="">Izaberite...</option>
                             <option value="Muski">Muški</option>
@@ -146,37 +187,39 @@ function ProfilePage() {
 
                 {/* Adresa */}
                 <div>
-                    <label>Država:</label>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Država</label>
                     <input 
                         value={formData.drzava} 
-                        onChange={e => setFormData({...formData, drzava: e.target.value})} 
-                        style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                        onChange={e => setFormData({...formData, drzava: e.target.value})}
                     />
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <div style={{ flex: 3 }}>
-                        <label>Ulica:</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '16px' }}>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Ulica</label>
                         <input 
                             value={formData.ulica} 
-                            onChange={e => setFormData({...formData, ulica: e.target.value})} 
-                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                            onChange={e => setFormData({...formData, ulica: e.target.value})}
                         />
                     </div>
-                    <div style={{ flex: 1 }}>
-                        <label>Broj:</label>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Broj</label>
                         <input 
                             value={formData.broj} 
-                            onChange={e => setFormData({...formData, broj: e.target.value})} 
-                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                            onChange={e => setFormData({...formData, broj: e.target.value})}
                         />
                     </div>
                 </div>
 
-                <button type="submit" style={{ marginTop: '10px', padding: '12px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '1.1em' }}>
+                <button type="submit" className="btn-success" style={{ 
+                  marginTop: '8px', 
+                  padding: '14px',
+                  fontSize: '1.05em'
+                }}>
                     💾 Sačuvaj Izmene
                 </button>
             </form>
+            </div>
         </div>
     );
 }

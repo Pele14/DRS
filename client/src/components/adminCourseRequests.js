@@ -29,36 +29,51 @@ function AdminCourseRequests() {
         }
     };
 
-    if (requests.length === 0) return <p>Nema novih zahteva za kurseve.</p>;
+    if (requests.length === 0) return (
+      <p style={{ 
+        fontStyle: 'italic', 
+        color: '#6B7280',
+        padding: '20px',
+        textAlign: 'center',
+        background: '#F9FAFB',
+        borderRadius: '8px'
+      }}>
+        ✅ Nema novih zahteva za kurseve.
+      </p>
+    );
 
     return (
         <div style={{ marginTop: '20px' }}>
-            <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff3cd' }}>
+            <table>
                 <thead>
                     <tr>
                         <th>Naziv Kursa</th>
                         <th>Profesor</th>
-                        <th>Akcija</th>
+                        <th style={{ textAlign: 'center' }}>Akcija</th>
                     </tr>
                 </thead>
                 <tbody>
                     {requests.map(req => (
-                        <tr key={req.id}>
-                            <td>{req.title}</td>
-                            <td>{req.professor}</td>
-                            <td>
-                                <button 
-                                    onClick={() => handleDecision(req.id, 'approved')}
-                                    style={{ marginRight: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}
-                                >
-                                    Prihvati
-                                </button>
-                                <button 
-                                    onClick={() => handleDecision(req.id, 'rejected')}
-                                    style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}
-                                >
-                                    Odbij
-                                </button>
+                        <tr key={req.id} style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.05) 100%)' }}>
+                            <td style={{ fontWeight: '600', color: '#1F2937' }}>{req.title}</td>
+                            <td style={{ color: '#6B7280' }}>{req.professor}</td>
+                            <td style={{ textAlign: 'center' }}>
+                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                    <button 
+                                        onClick={() => handleDecision(req.id, 'approved')}
+                                        className="btn-success"
+                                        style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                                    >
+                                        ✅ Prihvati
+                                    </button>
+                                    <button 
+                                        onClick={() => handleDecision(req.id, 'rejected')}
+                                        className="btn-danger"
+                                        style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                                    >
+                                        ❌ Odbij
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     ))}

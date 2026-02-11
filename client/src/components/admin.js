@@ -46,46 +46,90 @@ function AddUserForm() {
   };
 
   return (
-    <div style={{ border: '1px solid #ccc', padding: '20px', marginTop: '20px', borderRadius: '8px', maxWidth: '500px', backgroundColor: 'white' }}>
-      <h3>Admin Panel: Dodaj novog korisnika</h3>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div style={{ 
+      background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
+      border: '2px solid rgba(102, 126, 234, 0.2)',
+      padding: '28px', 
+      borderRadius: '12px', 
+      maxWidth: '600px',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+    }}>
+      <h3 style={{ 
+        marginTop: 0,
+        marginBottom: '24px',
+        color: '#1F2937'
+      }}>Admin Panel: Dodaj novog korisnika</h3>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         
         {/* Osnovni podaci */}
-        <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" required style={inputStyle} />
-        <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="Lozinka" required style={inputStyle} />
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Email</label>
+          <input name="email" value={formData.email} onChange={handleChange} placeholder="email@primer.com" required />
+        </div>
         
-        <select name="role" value={formData.role} onChange={handleChange} style={inputStyle}>
-            <option value="student">Student</option>
-            <option value="profesor">Profesor</option>
-            <option value="admin">Admin</option>
-        </select>
-
-        <hr style={{ width: '100%' }} />
-
-        {/* Lični podaci */}
-        <input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Ime" required style={inputStyle} />
-        <input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Prezime" required style={inputStyle} />
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Lozinka</label>
+          <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="••••••••" required />
+        </div>
         
-        <label style={{ fontSize: '0.8em' }}>Datum rođenja:</label>
-        <input name="datumRodjenja" type="date" value={formData.datumRodjenja} onChange={handleChange} required style={inputStyle} />
-        
-        <select name="pol" value={formData.pol} onChange={handleChange} style={inputStyle}>
-            <option value="Muski">Muški</option>
-            <option value="Zenski">Ženski</option>
-            <option value="Ostalo">Ostalo</option>
-        </select>
-
-        <hr style={{ width: '100%' }} />
-
-        {/* Adresa */}
-        <input name="drzava" value={formData.drzava} onChange={handleChange} placeholder="Država" style={inputStyle} />
-        <div style={{ display: 'flex', gap: '10px' }}>
-            <input name="ulica" value={formData.ulica} onChange={handleChange} placeholder="Ulica" style={{ flex: 1, ...inputStyle }} />
-            <input name="broj" value={formData.broj} onChange={handleChange} placeholder="Broj" style={{ width: '60px', ...inputStyle }} />
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Uloga</label>
+          <select name="role" value={formData.role} onChange={handleChange}>
+              <option value="student">Student</option>
+              <option value="profesor">Profesor</option>
+              <option value="admin">Admin</option>
+          </select>
         </div>
 
-        <button type="submit" style={{ marginTop: '10px', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
-            Sačuvaj Korisnika
+        <hr style={{ width: '100%', border: 'none', borderTop: '2px solid rgba(102, 126, 234, 0.2)', margin: '8px 0' }} />
+
+        {/* Lični podaci */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Ime</label>
+            <input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Ime" required />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Prezime</label>
+            <input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Prezime" required />
+          </div>
+        </div>
+        
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Datum rođenja</label>
+          <input name="datumRodjenja" type="date" value={formData.datumRodjenja} onChange={handleChange} required />
+        </div>
+        
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Pol</label>
+          <select name="pol" value={formData.pol} onChange={handleChange}>
+              <option value="Muski">Muški</option>
+              <option value="Zenski">Ženski</option>
+              <option value="Ostalo">Ostalo</option>
+          </select>
+        </div>
+
+        <hr style={{ width: '100%', border: 'none', borderTop: '2px solid rgba(102, 126, 234, 0.2)', margin: '8px 0' }} />
+
+        {/* Adresa */}
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Država</label>
+          <input name="drzava" value={formData.drzava} onChange={handleChange} placeholder="Država" />
+        </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Ulica</label>
+            <input name="ulica" value={formData.ulica} onChange={handleChange} placeholder="Ulica" />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Broj</label>
+            <input name="broj" value={formData.broj} onChange={handleChange} placeholder="Broj" />
+          </div>
+        </div>
+
+        <button type="submit" className="btn-success" style={{ marginTop: '8px' }}>
+            ✅ Sačuvaj Korisnika
         </button>
       </form>
     </div>

@@ -32,32 +32,41 @@ function UserList() {
 
     return (
         <div style={{ marginTop: '20px' }}>
-            <h3>Lista svih korisnika</h3>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            <h3 style={{ marginBottom: '20px', color: '#1F2937' }}>Lista svih korisnika</h3>
+            {error && <div className="alert alert-error">{error}</div>}
             
-            <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <table>
                 <thead>
-                    <tr style={{ backgroundColor: '#f2f2f2' }}>
+                    <tr>
                         <th>ID</th>
                         <th>Ime i Prezime</th>
                         <th>Email</th>
                         <th>Uloga</th>
-                        <th>Akcija</th>
+                        <th style={{ textAlign: 'center' }}>Akcija</th>
                     </tr>
                 </thead>
                 <tbody>
                     {users.map(user => (
                         <tr key={user.id}>
-                            <td>{user.id}</td>
-                            <td>{user.first_name} {user.last_name}</td>
-                            <td>{user.email}</td>
-                            <td>{user.role}</td>
+                            <td style={{ fontWeight: '600', color: '#6B7280' }}>#{user.id}</td>
+                            <td style={{ fontWeight: '500' }}>{user.first_name} {user.last_name}</td>
+                            <td style={{ color: '#6B7280' }}>{user.email}</td>
                             <td>
+                                <span className={
+                                  user.role === 'admin' ? 'badge-danger' : 
+                                  user.role === 'profesor' ? 'badge-warning' : 
+                                  'badge-primary'
+                                }>
+                                    {user.role}
+                                </span>
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
                                 <button 
                                     onClick={() => handleDelete(user.id)}
-                                    style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}
+                                    className="btn-danger"
+                                    style={{ padding: '8px 16px', fontSize: '0.85rem' }}
                                 >
-                                    Obriši
+                                    🗑️ Obriši
                                 </button>
                             </td>
                         </tr>

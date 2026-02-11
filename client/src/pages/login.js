@@ -23,17 +23,59 @@ function LoginPage() {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f2f5' }}>
-      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '15px', padding: '30px', backgroundColor: 'white', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', width: '300px' }}>
-        <h2 style={{ textAlign: 'center', margin: '0 0 10px 0' }}>Prijava</h2>
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '20px'
+    }}>
+      <form onSubmit={handleLogin} className="form-container" style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '20px', 
+        width: '100%',
+        maxWidth: '400px',
+        animation: 'fadeIn 0.6s ease'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+          <h2 style={{ 
+            margin: '0 0 8px 0',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            fontSize: '2rem',
+            fontWeight: '700'
+          }}>Dobrodošli</h2>
+          <p style={{ color: '#6B7280', margin: 0 }}>Prijavite se na svoj nalog</p>
+        </div>
         
-        {error && <div style={{ color: 'red', textAlign: 'center', fontSize: '0.9em' }}>{error}</div>}
+        {error && <div className="alert alert-error">{error}</div>}
 
-        <input type="email" onChange={(e) => setEmail(e.target.value)} placeholder="Email" required style={{ padding: '10px', borderRadius: '5px', border: '1px solid #ddd' }} />
-        <input type="password" onChange={(e) => setPassword(e.target.value)} placeholder="Lozinka" required style={{ padding: '10px', borderRadius: '5px', border: '1px solid #ddd' }} />
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Email adresa</label>
+          <input 
+            type="email" 
+            onChange={(e) => setEmail(e.target.value)} 
+            placeholder="" 
+            required 
+          />
+        </div>
+
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Lozinka</label>
+          <input 
+            type="password" 
+            onChange={(e) => setPassword(e.target.value)} 
+            placeholder="" 
+            required 
+          />
+        </div>
         
-        <button type="submit" style={{ padding: '10px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
-            Uloguj se
+        <button type="submit" style={{ marginTop: '10px' }}>
+            🔐 Uloguj se
         </button>
       </form>
     </div>
