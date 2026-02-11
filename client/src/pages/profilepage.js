@@ -18,6 +18,9 @@ function ProfilePage() {
     });
     const [preview, setPreview] = useState(null);
     const [imageFile, setImageFile] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         if (user) {
@@ -27,7 +30,7 @@ function ProfilePage() {
                 ulica: user.ulica || '',
                 broj: user.broj || '',
                 drzava: user.drzava || '',
-                pol: user.pol || 'Ostalo',
+                pol: user.pol || '',
                 datum_rodjenja: user.datum_rodjenja ? user.datum_rodjenja.substring(0, 10) : ''
             });
             setPreview(user.profile_image);
@@ -36,16 +39,35 @@ function ProfilePage() {
 
     const handleFile = (e) => {
         const file = e.target.files[0];
-        setImageFile(file);
-        setPreview(URL.createObjectURL(file));
+        if (file) {
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                setErrorMessage('Slika je prevelika. Maksimalna veličina je 5MB.');
+                return;
+            }
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                setErrorMessage('Molimo izaberite sliku.');
+                return;
+            }
+            setErrorMessage('');
+            setImageFile(file);
+            setPreview(URL.createObjectURL(file));
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
+        setErrorMessage('');
+        setSuccessMessage('');
+        
         const data = new FormData();
         
         Object.keys(formData).forEach(key => {
-            data.append(key, formData[key]);
+            if (formData[key]) {
+                data.append(key, formData[key]);
+            }
         });
         
         if (imageFile) data.append('profile_image', imageFile);
@@ -54,11 +76,15 @@ function ProfilePage() {
             await api.put('/users/profile', data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            alert("Uspešno sačuvano!");
-            window.location.reload(); 
+            setSuccessMessage('Profil je uspešno ažuriran!');
+            setTimeout(() => {
+                window.location.reload(); 
+            }, 1500);
         } catch (err) {
             console.error(err);
-            alert("Greška pri čuvanju!");
+            setErrorMessage('Greška pri čuvanju. Pokušajte ponovo.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -76,7 +102,7 @@ function ProfilePage() {
               animation: 'fadeIn 0.6s ease'
             }}>
             
-            {/* HEDER SA DUGMETOM NAZAD */}
+            {/* HEADER SA DUGMETOM NAZAD */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <h2 style={{ 
                   margin: 0,
@@ -88,10 +114,15 @@ function ProfilePage() {
                 <button 
                     onClick={() => navigate('/')}
                     className="btn-secondary"
+                    disabled={isLoading}
                 >
                     ← Nazad
                 </button>
             </div>
+
+            {/* Success/Error Messages */}
+            {successMessage && <div className="alert alert-success">{successMessage}</div>}
+            {errorMessage && <div className="alert alert-error">{errorMessage}</div>}
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 
@@ -116,16 +147,23 @@ function ProfilePage() {
                     <label style={{ 
                       display: 'inline-block', 
                       marginTop: '16px', 
-                      cursor: 'pointer', 
+                      cursor: isLoading ? 'not-allowed' : 'pointer', 
                       padding: '10px 20px',
                       background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
                       borderRadius: '8px',
                       color: '#4F46E5',
                       fontWeight: '600',
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.3s ease',
+                      opacity: isLoading ? 0.6 : 1
                     }}>
                         📷 Promeni sliku
-                        <input type="file" onChange={handleFile} style={{ display: 'none' }} />
+                        <input 
+                            type="file" 
+                            onChange={handleFile} 
+                            style={{ display: 'none' }} 
+                            disabled={isLoading}
+                            accept="image/*"
+                        />
                     </label>
                 </div>
 
@@ -147,17 +185,27 @@ function ProfilePage() {
                 {/* Lični podaci */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div>
-                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Ime</label>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>
+                            Ime
+                        </label>
                         <input 
+                            type="text"
                             value={formData.first_name} 
                             onChange={e => setFormData({...formData, first_name: e.target.value})}
+                            disabled={isLoading}
+                            placeholder="Vaše ime"
                         />
                     </div>
                     <div>
-                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Prezime</label>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>
+                            Prezime
+                        </label>
                         <input 
+                            type="text"
                             value={formData.last_name} 
                             onChange={e => setFormData({...formData, last_name: e.target.value})}
+                            disabled={isLoading}
+                            placeholder="Vaše prezime"
                         />
                     </div>
                 </div>
@@ -165,18 +213,24 @@ function ProfilePage() {
                 {/* Datum i Pol */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div>
-                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Datum rođenja</label>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>
+                            Datum rođenja
+                        </label>
                         <input 
                             type="date"
                             value={formData.datum_rodjenja} 
                             onChange={e => setFormData({...formData, datum_rodjenja: e.target.value})}
+                            disabled={isLoading}
                         />
                     </div>
                     <div>
-                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Pol</label>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>
+                            Pol
+                        </label>
                         <select 
                             value={formData.pol} 
                             onChange={e => setFormData({...formData, pol: e.target.value})}
+                            disabled={isLoading}
                         >
                             <option value="">Izaberite...</option>
                             <option value="Muski">Muški</option>
@@ -187,36 +241,56 @@ function ProfilePage() {
 
                 {/* Adresa */}
                 <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Država</label>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>
+                        Država
+                    </label>
                     <input 
+                        type="text"
                         value={formData.drzava} 
                         onChange={e => setFormData({...formData, drzava: e.target.value})}
+                        disabled={isLoading}
+                        placeholder="Npr. Srbija"
                     />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '16px' }}>
                     <div>
-                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Ulica</label>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>
+                            Ulica
+                        </label>
                         <input 
+                            type="text"
                             value={formData.ulica} 
                             onChange={e => setFormData({...formData, ulica: e.target.value})}
+                            disabled={isLoading}
+                            placeholder="Naziv ulice"
                         />
                     </div>
                     <div>
-                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>Broj</label>
+                        <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontWeight: '500' }}>
+                            Broj
+                        </label>
                         <input 
+                            type="text"
                             value={formData.broj} 
                             onChange={e => setFormData({...formData, broj: e.target.value})}
+                            disabled={isLoading}
+                            placeholder="12"
                         />
                     </div>
                 </div>
 
-                <button type="submit" className="btn-success" style={{ 
-                  marginTop: '8px', 
-                  padding: '14px',
-                  fontSize: '1.05em'
-                }}>
-                    💾 Sačuvaj Izmene
+                <button 
+                    type="submit" 
+                    className="btn-success" 
+                    style={{ 
+                      marginTop: '8px', 
+                      padding: '14px',
+                      fontSize: '1.05em'
+                    }}
+                    disabled={isLoading}
+                >
+                    {isLoading ? '⏳ Čuvanje...' : '💾 Sačuvaj Izmene'}
                 </button>
             </form>
             </div>

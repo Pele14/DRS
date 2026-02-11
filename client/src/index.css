@@ -120,6 +120,16 @@ button {
   box-shadow: var(--shadow-md);
 }
 
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-md);
+}
+
 button::before {
   content: '';
   position: absolute;
@@ -133,12 +143,12 @@ button::before {
   transition: width 0.6s, height 0.6s;
 }
 
-button:hover::before {
+button:not(:disabled):hover::before {
   width: 300px;
   height: 300px;
 }
 
-button:active {
+button:not(:disabled):active {
   transform: scale(0.98);
 }
 
@@ -151,8 +161,8 @@ button.btn-primary {
   animation: gradientShift 3s ease infinite;
 }
 
-button[type="submit"]:hover,
-button.btn-primary:hover {
+button[type="submit"]:not(:disabled):hover,
+button.btn-primary:not(:disabled):hover {
   box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
   transform: translateY(-2px);
 }
@@ -163,7 +173,7 @@ button.btn-success {
   color: white;
 }
 
-button.btn-success:hover {
+button.btn-success:not(:disabled):hover {
   box-shadow: 0 8px 16px rgba(16, 185, 129, 0.4);
   transform: translateY(-2px);
 }
@@ -174,7 +184,7 @@ button.btn-danger {
   color: white;
 }
 
-button.btn-danger:hover {
+button.btn-danger:not(:disabled):hover {
   box-shadow: 0 8px 16px rgba(239, 68, 68, 0.4);
   transform: translateY(-2px);
 }
@@ -185,7 +195,7 @@ button.btn-secondary {
   color: white;
 }
 
-button.btn-secondary:hover {
+button.btn-secondary:not(:disabled):hover {
   box-shadow: 0 8px 16px rgba(107, 114, 128, 0.4);
   transform: translateY(-2px);
 }
@@ -196,7 +206,7 @@ button.btn-warning {
   color: white;
 }
 
-button.btn-warning:hover {
+button.btn-warning:not(:disabled):hover {
   box-shadow: 0 8px 16px rgba(245, 158, 11, 0.4);
   transform: translateY(-2px);
 }
@@ -220,6 +230,16 @@ select {
   box-shadow: var(--shadow-sm);
 }
 
+input[type="text"]:disabled,
+input[type="email"]:disabled,
+input[type="password"]:disabled,
+textarea:disabled,
+select:disabled {
+  background: #F3F4F6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
@@ -230,6 +250,13 @@ select:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
   transform: translateY(-1px);
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+textarea::placeholder {
+  color: #9CA3AF;
 }
 
 input[type="file"] {
@@ -308,6 +335,10 @@ tbody tr {
 tbody tr:hover {
   background: #F9FAFB;
   transform: scale(1.01);
+}
+
+tbody tr:last-child {
+  border-bottom: none;
 }
 
 tbody td {
@@ -473,6 +504,12 @@ h3 {
   border-left: 4px solid #3B82F6;
 }
 
+.alert-warning {
+  background: #FEF3C7;
+  color: #92400E;
+  border-left: 4px solid #F59E0B;
+}
+
 /* ==================== LOADING SPINNER ==================== */
 .spinner {
   border: 3px solid #F3F4F6;
@@ -504,6 +541,53 @@ h3 {
   }
   
   button {
-    width: 100%;
+    padding: 10px 20px;
+    font-size: 0.9rem;
   }
+  
+  .container {
+    padding: 15px;
+  }
+
+  table {
+    font-size: 0.9rem;
+  }
+
+  thead th,
+  tbody td {
+    padding: 12px 8px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  .form-container {
+    padding: 16px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* ==================== SMOOTH SCROLLING ==================== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ==================== FOCUS VISIBLE ==================== */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
